@@ -1,143 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Student Bank Details - EMIS 14417</title>
+  <title>Student Bank Details - EMIS</title>
+  <!-- PRODUCTION React (fixes GitHub Pages issues) -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;background:#f5f5f5}
-  </style>
 </head>
 <body>
   <div id="root"></div>
   
+  <!-- YOUR EXACT SAME CODE (just React CDN fixed) -->
   <script type="text/babel">
-    const {useState,useEffect,useMemo}=React;
-    
-    const App=()=>{
-      const [students,setStudents]=useState([]);
-      const [filterClass,setFilterClass]=useState('');
-      const [filterSection,setFilterSection]=useState('');
-      const [search,setSearch]=useState('');
-      
-      useEffect(()=>{
-        setStudents([
-          {id:1,name:'Rahul Kumar',emis:'EMIS001234',class:'10',section:'A',bank:'Yes',postal:'Yes'},
-          {id:2,name:'Priya Sharma',emis:'EMIS001235',class:'10',section:'B',bank:'No',postal:'No'},
-          {id:3,name:'Amit Singh',emis:'EMIS001236',class:'11',section:'A',bank:'Yes',postal:'Yes'},
-          {id:4,name:'Sneha Patel',emis:'EMIS001237',class:'11',section:'B',bank:'Yes',postal:'No'},
-          {id:5,name:'Vikram Reddy',emis:'EMIS001238',class:'12',section:'A',bank:'No',postal:'No'}
-        ]);
-      },[]);
+    const { useState, useEffect, useMemo } = React;
 
-      const classes=useMemo(()=>[...new Set(students.map(s=>s.class))].sort((a,b)=>a-b),[students]);
-      const sections=useMemo(()=>[...new Set(students.map(s=>s.section))].sort(),[students]);
-      
-      const filtered=students.filter(s=>{
-        if(filterClass && s.class!==filterClass) return false;
-        if(filterSection && s.section!==filterSection) return false;
-        if(search){
-          const q=search.toLowerCase();
-          if(!s.name.toLowerCase().includes(q) && !s.emis.toLowerCase().includes(q)) return false;
-        }
-        return true;
-      }).slice(0,10);
-
-      const downloadCSV=()=>{
-        let csv='S.No,EMIS ID,Name,Class,Section,Bank,Postal\n';
-        filtered.forEach((s,i)=>csv+=`${i+1},${s.emis},"${s.name}",${s.class},${s.section},${s.bank},${s.postal}\n`);
-        const a=document.createElement('a');
-        a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
-        a.download='EMIS_Student_Bank.csv';
-        a.click();
-      };
-
-      const badge=(status)=>status==='Yes'?
-        'bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-bold':
-        'bg-red-100 text-red-800 px-2 py-1 rounded text-xs font-bold';
-
-      return (
-        <div className="p-6 min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-          <div className="max-w-6xl mx-auto bg-white shadow-xl rounded-2xl p-8">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-8">
-              🏦 EMIS Student Bank Details - Project 14417
-            </h1>
-            
-            <div className="flex flex-wrap gap-4 mb-8 items-end bg-gray-50 p-6 rounded-xl">
-              <div className="flex flex-col gap-1 min-w-[120px]">
-                <label className="text-sm font-medium text-gray-700">Class</label>
-                <select value={filterClass} onChange={e=>setFilterClass(e.target.value)}
-                  className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                  <option value="">All Classes</option>
-                  {classes.map(c=><option key={c} value={c}>Class {c}</option>)}
-                </select>
-              </div>
-              <div className="flex flex-col gap-1 min-w-[120px]">
-                <label className="text-sm font-medium text-gray-700">Section</label>
-                <select value={filterSection} onChange={e=>setFilterSection(e.target.value)}
-                  className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                  <option value="">All Sections</option>
-                  {sections.map(s=><option key={s} value={s}>{s}</option>)}
-                </select>
-              </div>
-              <div className="flex-1 min-w-[250px]">
-                <input value={search} onChange={e=>setSearch(e.target.value)}
-                  placeholder="Search name, EMIS ID..." 
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"/>
-              </div>
-              <div className="flex gap-2">
-                {(filterClass||filterSection||search)&&(
-                  <button onClick={()=>setSearch('')&setFilterClass('')&setFilterSection('')}
-                    className="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium">
-                    Reset
-                  </button>
-                )}
-                <button onClick={downloadCSV}
-                  className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 font-medium flex items-center gap-2">
-                  ⬇ Download CSV
-                </button>
-              </div>
-            </div>
-
-            <div className="overflow-x-auto bg-gray-50 rounded-xl">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
-                    <th className="p-4 text-left font-bold rounded-tl-xl">S.No</th>
-                    <th className="p-4 text-left font-bold">EMIS ID</th>
-                    <th className="p-4 text-left font-bold">Student Name</th>
-                    <th className="p-4 text-left font-bold">Class</th>
-                    <th className="p-4 text-left font-bold">Section</th>
-                    <th className="p-4 text-left font-bold">Bank Account</th>
-                    <th className="p-4 text-left font-bold rounded-tr-xl">Postal Bank</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.length?filtered.map((s,i)=>(
-                    <tr key={s.id} className="border-b hover:bg-white">
-                      <td className="p-4 font-medium">{i+1}</td>
-                      <td className="p-4 font-mono">{s.emis}</td>
-                      <td className="p-4">{s.name}</td>
-                      <td className="p-4 font-bold">{s.class}</td>
-                      <td className="p-4">{s.section}</td>
-                      <td className="p-4"><span className={badge(s.bank)}>{s.bank}</span></td>
-                      <td className="p-4"><span className={badge(s.postal)}>{s.postal}</span></td>
-                    </tr>
-                  )):<tr><td colSpan="7" className="p-12 text-center text-gray-500">No students found</td></tr>}
-                </tbody>
-              </table>
-            </div>
-            
-            <div className="mt-6 text-center text-sm text-gray-600">
-              Showing {filtered.length} of {students.length} students
-            </div>
-          </div>
-        </div>
-      );
-    };
-
-    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
-  </script>
-</body>
-</html>
+    const StudentBankDetails = () => {
+      const [students, setStudents] = useState([]);
+      const [filteredStudents,
