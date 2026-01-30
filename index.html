@@ -4,30 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Bank Details - EMIS</title>
-  <!-- PRODUCTION React (Fixes GitHub Pages blank screen) -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
     body { font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; }
-    table { width: 100%; border-collapse: collapse; background: white; }
-    th { background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; padding: 12px 15px; text-align: left; font-weight: 600; }
-    td { padding: 12px 15px; border-bottom: 1px solid #eee; }
-    tr:hover { background-color: #f1f1f1; }
-    .status-yes { background-color: #d4edda; color: #155724; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
-    .status-no { background-color: #f8d7da; color: #721c24; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
-    .filter-section { padding: 20px; border-bottom: 1px solid #e0e0e0; background: white; }
+    .content-card { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; max-width: 1400px; margin: 0 auto; }
+    .breadcrumb { padding: 20px; background: #f8f9fa; font-size: 18px; color: #333; }
+    .filter-section { padding: 20px; border-bottom: 1px solid #e0e0e0; }
     .filter-row { display: flex; justify-content: space-between; align-items: end; gap: 15px; flex-wrap: wrap; }
     .filter-group { display: flex; flex-direction: column; gap: 5px; min-width: 160px; }
+    label { font-size: 13px; font-weight: 500; color: #333; }
     .filter-dropdown, .search-input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
     .reset-btn { padding: 8px 16px; background: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer; }
     .excel-btn { padding: 8px 16px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 500; }
     .search-group { flex: 1; max-width: 300px; }
-    .pagination { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 20px; border-top: 1px solid #e0e0e0; background: white; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th { padding: 12px 15px; text-align: left; font-weight: 600; background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; cursor: pointer; }
+    td { padding: 12px 15px; border-bottom: 1px solid #eee; }
+    tr:hover { background-color: #f1f1f1; }
+    .status-yes { background-color: #d4edda; color: #155724; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+    .status-no { background-color: #f8d7da; color: #721c24; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+    .status-na { background-color: #fff3cd; color: #856404; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 20px; border-top: 1px solid #e0e0e0; }
     .page-btn { padding: 8px 12px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; }
     .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .content-card { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; max-width: 1400px; margin: 0 auto; }
-    .breadcrumb { padding: 20px; background: #f8f9fa; font-size: 18px; color: #333; }
+    .container { padding: 20px; background-color: #f5f5f5; min-height: 100vh; }
   </style>
 </head>
 <body>
@@ -37,7 +39,6 @@
     const { useState, useEffect, useMemo } = React;
 
     const StudentBankDetails = () => {
-      // Your exact main code state/logic here (unchanged)
       const [students, setStudents] = useState([]);
       const [filteredStudents, setFilteredStudents] = useState([]);
       const [loading, setLoading] = useState(true);
@@ -47,19 +48,18 @@
       const [sortColumn, setSortColumn] = useState('');
       const [sortDirection, setSortDirection] = useState('asc');
       const [currentPage, setCurrentPage] = useState(1);
-      const [itemsPerPage] = useState(10);
+      const itemsPerPage = 10;
 
-      // Mock data (replace with your EMIS API: fetch('/api/students'))
       useEffect(() => {
         setLoading(true);
         const mockData = [
           { id: 1, studentName: 'Rahul Kumar', studentEmisId: 'EMIS001234', class: '10', section: 'A', bankAccountAvailable: 'Yes', postalBankAccount: 'Yes' },
-          { id: 2, studentName: 'Priya Sharma', studentEmisId: 'EMIS001235', class: '10', section: 'B', bankAccountAvailable: 'No', postalBankAccount: 'No' },
+          { id: 2, studentName: 'Priya Sharma', studentEmisId: 'EMIS001235', class: '10', section: 'B', bankAccountAvailable: 'NA', postalBankAccount: 'NA' },
           { id: 3, studentName: 'Amit Singh', studentEmisId: 'EMIS001236', class: '11', section: 'A', bankAccountAvailable: 'Yes', postalBankAccount: 'Yes' },
-          { id: 4, studentName: 'Sneha Patel', studentEmisId: 'EMIS001237', class: '11', section: 'B', bankAccountAvailable: 'Yes', postalBankAccount: 'No' },
-          { id: 5, studentName: 'Vikram Reddy', studentEmisId: 'EMIS001238', class: '12', section: 'A', bankAccountAvailable: 'No', postalBankAccount: 'No' },
+          { id: 4, studentName: 'Sneha Patel', studentEmisId: 'EMIS001237', class: '11', section: 'B', bankAccountAvailable: 'Yes', postalBankAccount: 'NA' },
+          { id: 5, studentName: 'Vikram Reddy', studentEmisId: 'EMIS001238', class: '12', section: 'A', bankAccountAvailable: 'No', postalBankAccount: 'NA' },
           { id: 6, studentName: 'Anita Desai', studentEmisId: 'EMIS001239', class: '12', section: 'B', bankAccountAvailable: 'Yes', postalBankAccount: 'Yes' },
-          { id: 7, studentName: 'Rohan Gupta', studentEmisId: 'EMIS001240', class: '9', section: 'A', bankAccountAvailable: 'Yes', postalBankAccount: 'No' }
+          { id: 7, studentName: 'Rohan Gupta', studentEmisId: 'EMIS001240', class: '9', section: 'A', bankAccountAvailable: 'NA', postalBankAccount: 'No' }
         ];
         setStudents(mockData);
         setFilteredStudents(mockData);
@@ -69,7 +69,6 @@
       const classes = useMemo(() => [...new Set(students.map(s => s.class))].sort((a, b) => parseInt(a) - parseInt(b)), [students]);
       const sections = useMemo(() => [...new Set(students.map(s => s.section))].sort(), [students]);
 
-      // Filter logic (your exact code)
       useEffect(() => {
         let filtered = [...students];
         if (selectedClass) filtered = filtered.filter(s => s.class === selectedClass);
@@ -89,7 +88,6 @@
         setCurrentPage(1);
       }, [students, selectedClass, selectedSection, searchKeyword]);
 
-      // Sort logic (your exact code)
       const handleSort = (column) => {
         const sortableColumns = ['studentEmisId', 'studentName', 'class', 'section'];
         if (!sortableColumns.includes(column)) return;
@@ -112,7 +110,6 @@
       const currentItems = filteredStudents.slice(indexOfFirstItem, indexOfLastItem);
       const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
 
-      // Excel export (your exact code)
       const handleExcelDownload = () => {
         const headers = ['S.No', 'Student EMIS ID', 'Student Name', 'Class', 'Section', 'Bank Account Available', 'Postal Bank Account'];
         const csvContent = [
@@ -141,26 +138,31 @@
         setSearchKeyword('');
       };
 
-      if (loading) return <div style={{padding: '40px', textAlign: 'center'}}>Loading...</div>;
+      const getStatusClass = (status) => {
+        if (status === 'Yes') return 'status-yes';
+        if (status === 'No') return 'status-no';
+        return 'status-na';  // NA or others
+      };
 
       return (
-        <div style={{padding: '20px', backgroundColor: '#f5f5f5', minHeight: '100vh'}}>
-          <div style={{fontSize: '18px', marginBottom: '20px', color: '#333'}}>
-            Students › <strong>Student Bank Details</strong>
+        <div className="container">
+          <div className="breadcrumb">
+            Students <span style={{margin: '0 8px', color: '#999'}}>›</span> <strong>Student Bank Details</strong>
           </div>
-          <div style={{background: 'white', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', overflow: 'hidden'}}>
+
+          <div className="content-card">
             <div className="filter-section">
               <div className="filter-row">
                 <div style={{display: 'flex', gap: '15px', alignItems: 'end', flexWrap: 'wrap'}}>
                   <div className="filter-group">
-                    <label style={{fontSize: '13px', fontWeight: '500', color: '#333'}}>Class</label>
+                    <label>Class</label>
                     <select className="filter-dropdown" value={selectedClass} onChange={(e) => setSelectedClass(e.target.value)}>
                       <option value="">All Classes</option>
                       {classes.map(cls => <option key={cls} value={cls}>Class {cls}</option>)}
                     </select>
                   </div>
                   <div className="filter-group">
-                    <label style={{fontSize: '13px', fontWeight: '500', color: '#333'}}>Section</label>
+                    <label>Section</label>
                     <select className="filter-dropdown" value={selectedSection} onChange={(e) => setSelectedSection(e.target.value)}>
                       <option value="">All Sections</option>
                       {sections.map(sec => <option key={sec} value={sec}>{sec}</option>)}
@@ -172,19 +174,20 @@
                   <button className="excel-btn" onClick={handleExcelDownload}>⬇ Excel Download</button>
                 </div>
                 <div className="search-group">
-                  <input className="search-input" placeholder="Search by name, EMIS ID, class..." value={searchKeyword} onChange={(e) => setSearchKeyword(e.target.value)} />
+                  <input className="search-input" placeholder="Search name, EMIS ID..." value={searchKeyword} onChange={(e) => setSearchKeyword(e.target.value)} />
                 </div>
               </div>
             </div>
+
             <div style={{overflowX: 'auto'}}>
               <table>
                 <thead>
                   <tr>
                     <th>S.No</th>
-                    <th style={{cursor: 'pointer'}} onClick={() => handleSort('studentEmisId')}>EMIS ID</th>
-                    <th style={{cursor: 'pointer'}} onClick={() => handleSort('studentName')}>Student Name</th>
-                    <th style={{cursor: 'pointer'}} onClick={() => handleSort('class')}>Class</th>
-                    <th style={{cursor: 'pointer'}} onClick={() => handleSort('section')}>Section</th>
+                    <th onClick={() => handleSort('studentEmisId')}>EMIS ID</th>
+                    <th onClick={() => handleSort('studentName')}>Student Name</th>
+                    <th onClick={() => handleSort('class')}>Class</th>
+                    <th onClick={() => handleSort('section')}>Section</th>
                     <th>Bank Account</th>
                     <th>Postal Bank Account</th>
                   </tr>
@@ -200,14 +203,23 @@
                         <td>{student.studentName}</td>
                         <td>{student.class}</td>
                         <td>{student.section}</td>
-                        <td><span className={student.bankAccountAvailable === 'Yes' ? 'status-yes' : 'status-no'}>{student.bankAccountAvailable}</span></td>
-                        <td><span className={student.postalBankAccount === 'Yes' ? 'status-yes' : 'status-no'}>{student.postalBankAccount}</span></td>
+                        <td>
+                          <span className={getStatusClass(student.bankAccountAvailable)}>
+                            {student.bankAccountAvailable}
+                          </span>
+                        </td>
+                        <td>
+                          <span className={getStatusClass(student.postalBankAccount)}>
+                            {student.postalBankAccount}
+                          </span>
+                        </td>
                       </tr>
                     ))
                   )}
                 </tbody>
               </table>
             </div>
+
             {filteredStudents.length > 0 && (
               <div className="pagination">
                 <button className="page-btn" onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>‹‹</button>
@@ -227,4 +239,3 @@
   </script>
 </body>
 </html>
-
