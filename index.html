@@ -8,28 +8,266 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; }
-    .content-card { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; max-width: 1400px; margin: 0 auto; }
-    .breadcrumb { padding: 20px; background: #f8f9fa; font-size: 18px; color: #333; }
-    .filter-section { padding: 20px; border-bottom: 1px solid #e0e0e0; }
-    .filter-row { display: flex; justify-content: space-between; align-items: end; gap: 15px; flex-wrap: wrap; }
-    .filter-group { display: flex; flex-direction: column; gap: 5px; min-width: 160px; }
-    label { font-size: 13px; font-weight: 500; color: #333; }
-    .filter-dropdown, .search-input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
-    .reset-btn { padding: 8px 16px; background: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer; }
-    .excel-btn { padding: 8px 16px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 500; }
-    .search-group { flex: 1; max-width: 300px; }
-    table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    th { padding: 12px 15px; text-align: left; font-weight: 600; background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; cursor: pointer; }
-    td { padding: 12px 15px; border-bottom: 1px solid #eee; }
-    tr:hover { background-color: #f1f1f1; }
-    .status-yes { background-color: #d4edda; color: #155724; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
-    .status-no { background-color: #f8d7da; color: #721c24; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
-    .status-na { background-color: #fff3cd; color: #856404; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
-    .pagination { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 20px; border-top: 1px solid #e0e0e0; }
-    .page-btn { padding: 8px 12px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; }
-    .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .container { padding: 20px; background-color: #f5f5f5; min-height: 100vh; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f0f5; }
+    
+    .top-gradient-bar {
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      height: 8px;
+      width: 100%;
+    }
+    
+    .breadcrumb { 
+      padding: 15px 25px;
+      font-size: 14px; 
+      color: #666;
+      background-color: #f0f0f5;
+    }
+    
+    .breadcrumb-separator { margin: 0 8px; color: #999; }
+    .breadcrumb-active { color: #333; font-weight: 500; }
+    
+    .container { min-height: 100vh; }
+    
+    .content-card { 
+      background: white; 
+      margin: 0 20px 20px 20px;
+      border-radius: 8px; 
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+      overflow: hidden;
+    }
+    
+    .filter-section { 
+      padding: 20px 25px; 
+      border-bottom: 1px solid #e0e0e0;
+      background-color: white;
+    }
+    
+    .filter-row { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      gap: 15px; 
+      flex-wrap: wrap;
+    }
+    
+    .filter-controls { 
+      display: flex; 
+      gap: 12px; 
+      align-items: center; 
+      flex-wrap: wrap;
+    }
+    
+    .filter-group { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 5px; 
+      min-width: 140px;
+    }
+    
+    .filter-label { 
+      font-size: 12px; 
+      font-weight: 500; 
+      color: #555;
+    }
+    
+    .filter-dropdown { 
+      padding: 8px 12px; 
+      border: 1px solid #ccc; 
+      border-radius: 4px; 
+      font-size: 13px;
+      background-color: white;
+      outline: none;
+      cursor: pointer;
+    }
+    
+    .filter-dropdown:focus {
+      border-color: #22d3ee;
+    }
+    
+    .excel-btn { 
+      padding: 8px 18px; 
+      background-color: #10b981; 
+      color: white; 
+      border: none; 
+      border-radius: 4px; 
+      cursor: pointer; 
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: 18px;
+      transition: background-color 0.2s;
+    }
+    
+    .excel-btn:hover {
+      background-color: #059669;
+    }
+    
+    .na-info-btn {
+      padding: 6px 16px;
+      background-color: #06b6d4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      margin-top: 18px;
+      cursor: default;
+    }
+    
+    .search-group { 
+      flex: 0 0 auto;
+      min-width: 250px;
+    }
+    
+    .search-input { 
+      width: 100%; 
+      padding: 8px 12px; 
+      border: 1px solid #ccc; 
+      border-radius: 4px; 
+      font-size: 13px;
+      outline: none;
+    }
+    
+    .search-input:focus {
+      border-color: #22d3ee;
+    }
+    
+    .table-container { 
+      overflow-x: auto;
+      background-color: white;
+    }
+    
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      font-size: 13px;
+    }
+    
+    th { 
+      padding: 14px 16px; 
+      text-align: left; 
+      font-weight: 600; 
+      background-color: #22d3ee; 
+      color: white;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    
+    th.center { text-align: center; }
+    
+    th.postal-header {
+      background-color: #86efac;
+      text-align: center;
+      min-width: 180px;
+    }
+    
+    td { 
+      padding: 14px 16px; 
+      border-bottom: 1px solid #e5e7eb;
+      color: #374151;
+    }
+    
+    td.center { text-align: center; }
+    
+    tr:hover {
+      background-color: #f9fafb;
+    }
+    
+    .status-yes { 
+      padding: 5px 16px; 
+      border-radius: 14px; 
+      font-size: 12px; 
+      background-color: #d1fae5; 
+      color: #065f46; 
+      font-weight: 500;
+      display: inline-block;
+    }
+    
+    .status-no { 
+      padding: 5px 16px; 
+      border-radius: 14px; 
+      font-size: 12px; 
+      background-color: #fee2e2; 
+      color: #991b1b; 
+      font-weight: 500;
+      display: inline-block;
+    }
+    
+    .status-na { 
+      padding: 5px 20px; 
+      border-radius: 14px; 
+      font-size: 12px; 
+      background-color: #86efac; 
+      color: white; 
+      font-weight: 600;
+      display: inline-block;
+    }
+    
+    .pagination { 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      gap: 8px; 
+      padding: 20px; 
+      border-top: 1px solid #e5e7eb;
+      background-color: white;
+    }
+    
+    .page-btn { 
+      padding: 6px 10px; 
+      border: 1px solid #d1d5db; 
+      background: white; 
+      border-radius: 4px; 
+      cursor: pointer;
+      font-size: 13px;
+      color: #6b7280;
+      min-width: 32px;
+      transition: background-color 0.2s;
+    }
+    
+    .page-btn:hover:not(:disabled) {
+      background-color: #f3f4f6;
+    }
+    
+    .page-btn:disabled {
+      border-color: #e5e7eb;
+      background-color: #f9fafb;
+      cursor: not-allowed;
+      color: #d1d5db;
+    }
+    
+    .page-text {
+      font-size: 13px;
+      color: #374151;
+      padding: 0 10px;
+    }
+    
+    .no-records {
+      text-align: center;
+      padding: 40px;
+      color: #6b7280;
+    }
+    
+    @media (max-width: 768px) {
+      .filter-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .filter-controls {
+        width: 100%;
+      }
+      
+      .search-group {
+        width: 100%;
+        min-width: 100%;
+      }
+      
+      .content-card {
+        margin: 0 10px 10px 10px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -52,22 +290,33 @@
 
       useEffect(() => {
         setLoading(true);
+        // Mock data - replace with your API call
         const mockData = [
           { id: 1, studentName: 'Rahul Kumar', studentEmisId: 'EMIS001234', class: '10', section: 'A', bankAccountAvailable: 'Yes', postalBankAccount: 'Yes' },
-          { id: 2, studentName: 'Priya Sharma', studentEmisId: 'EMIS001235', class: '10', section: 'B', bankAccountAvailable: 'NA', postalBankAccount: 'NA' },
+          { id: 2, studentName: 'Priya Sharma', studentEmisId: 'EMIS001235', class: '10', section: 'B', bankAccountAvailable: 'No', postalBankAccount: 'NA' },
           { id: 3, studentName: 'Amit Singh', studentEmisId: 'EMIS001236', class: '11', section: 'A', bankAccountAvailable: 'Yes', postalBankAccount: 'Yes' },
-          { id: 4, studentName: 'Sneha Patel', studentEmisId: 'EMIS001237', class: '11', section: 'B', bankAccountAvailable: 'Yes', postalBankAccount: 'NA' },
+          { id: 4, studentName: 'Sneha Patel', studentEmisId: 'EMIS001237', class: '11', section: 'B', bankAccountAvailable: 'Yes', postalBankAccount: 'No' },
           { id: 5, studentName: 'Vikram Reddy', studentEmisId: 'EMIS001238', class: '12', section: 'A', bankAccountAvailable: 'No', postalBankAccount: 'NA' },
           { id: 6, studentName: 'Anita Desai', studentEmisId: 'EMIS001239', class: '12', section: 'B', bankAccountAvailable: 'Yes', postalBankAccount: 'Yes' },
-          { id: 7, studentName: 'Rohan Gupta', studentEmisId: 'EMIS001240', class: '9', section: 'A', bankAccountAvailable: 'NA', postalBankAccount: 'No' }
+          { id: 7, studentName: 'Rohan Gupta', studentEmisId: 'EMIS001240', class: '9', section: 'A', bankAccountAvailable: 'Yes', postalBankAccount: 'No' },
+          { id: 8, studentName: 'Kavya Nair', studentEmisId: 'EMIS001241', class: '9', section: 'B', bankAccountAvailable: 'No', postalBankAccount: 'NA' },
+          { id: 9, studentName: 'Arjun Verma', studentEmisId: 'EMIS001242', class: '10', section: 'A', bankAccountAvailable: 'Yes', postalBankAccount: 'Yes' },
+          { id: 10, studentName: 'Divya Iyer', studentEmisId: 'EMIS001243', class: '10', section: 'B', bankAccountAvailable: 'Yes', postalBankAccount: 'No' },
         ];
         setStudents(mockData);
         setFilteredStudents(mockData);
         setLoading(false);
       }, []);
 
-      const classes = useMemo(() => [...new Set(students.map(s => s.class))].sort((a, b) => parseInt(a) - parseInt(b)), [students]);
-      const sections = useMemo(() => [...new Set(students.map(s => s.section))].sort(), [students]);
+      const classes = useMemo(() => {
+        const uniqueClasses = [...new Set(students.map(s => s.class))];
+        return uniqueClasses.sort((a, b) => parseInt(a) - parseInt(b));
+      }, [students]);
+
+      const sections = useMemo(() => {
+        const uniqueSections = [...new Set(students.map(s => s.section))];
+        return uniqueSections.sort();
+      }, [students]);
 
       useEffect(() => {
         let filtered = [...students];
@@ -79,9 +328,7 @@
             s.studentName.toLowerCase().includes(keyword) ||
             s.studentEmisId.toLowerCase().includes(keyword) ||
             s.class.includes(keyword) ||
-            s.section.toLowerCase().includes(keyword) ||
-            s.bankAccountAvailable.toLowerCase().includes(keyword) ||
-            s.postalBankAccount.toLowerCase().includes(keyword)
+            s.section.toLowerCase().includes(keyword)
           );
         }
         setFilteredStudents(filtered);
@@ -89,13 +336,18 @@
       }, [students, selectedClass, selectedSection, searchKeyword]);
 
       const handleSort = (column) => {
-        const sortableColumns = ['studentEmisId', 'studentName', 'class', 'section'];
+        const sortableColumns = ['studentName', 'studentEmisId', 'class', 'section'];
         if (!sortableColumns.includes(column)) return;
+        
         let direction = 'asc';
         if (sortColumn === column && sortDirection === 'asc') direction = 'desc';
+        
         const sorted = [...filteredStudents].sort((a, b) => {
           let aValue = a[column], bValue = b[column];
-          if (column === 'class') { aValue = parseInt(aValue); bValue = parseInt(bValue); }
+          if (column === 'class') {
+            aValue = parseInt(aValue);
+            bValue = parseInt(bValue);
+          }
           if (aValue < bValue) return direction === 'asc' ? -1 : 1;
           if (aValue > bValue) return direction === 'asc' ? 1 : -1;
           return 0;
@@ -111,7 +363,7 @@
       const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
 
       const handleExcelDownload = () => {
-        const headers = ['S.No', 'Student EMIS ID', 'Student Name', 'Class', 'Section', 'Bank Account Available', 'Postal Bank Account'];
+        const headers = ['S.No', 'EMIS ID', 'Student Name', 'Class', 'Section', 'Bank Account Availability(Yes/No)', 'Whether it is a Postal Bank Account (Yes/No)'];
         const csvContent = [
           headers.join(','),
           ...filteredStudents.map((student, index) => [
@@ -128,87 +380,114 @@
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `Student_Postal_Bank_Details_${new Date().toISOString().split('T')[0]}.csv`;
+        link.download = `Student_Bank_Details_${new Date().toISOString().split('T')[0]}.csv`;
         link.click();
-      };
-
-      const handleResetFilters = () => {
-        setSelectedClass('');
-        setSelectedSection('');
-        setSearchKeyword('');
       };
 
       const getStatusClass = (status) => {
         if (status === 'Yes') return 'status-yes';
         if (status === 'No') return 'status-no';
-        return 'status-na';  // NA or others
+        return 'status-na';
       };
 
       return (
         <div className="container">
+          <div className="top-gradient-bar"></div>
+          
           <div className="breadcrumb">
-            Students <span style={{margin: '0 8px', color: '#999'}}>›</span> <strong>Student Bank Details</strong>
+            <span>Students</span>
+            <span className="breadcrumb-separator">›</span>
+            <span className="breadcrumb-active">Student Bank Details</span>
           </div>
 
           <div className="content-card">
             <div className="filter-section">
               <div className="filter-row">
-                <div style={{display: 'flex', gap: '15px', alignItems: 'end', flexWrap: 'wrap'}}>
+                <div className="filter-controls">
                   <div className="filter-group">
-                    <label>Class</label>
-                    <select className="filter-dropdown" value={selectedClass} onChange={(e) => setSelectedClass(e.target.value)}>
+                    <label className="filter-label">Class</label>
+                    <select 
+                      className="filter-dropdown" 
+                      value={selectedClass} 
+                      onChange={(e) => setSelectedClass(e.target.value)}
+                    >
                       <option value="">All Classes</option>
                       {classes.map(cls => <option key={cls} value={cls}>Class {cls}</option>)}
                     </select>
                   </div>
+                  
                   <div className="filter-group">
-                    <label>Section</label>
-                    <select className="filter-dropdown" value={selectedSection} onChange={(e) => setSelectedSection(e.target.value)}>
+                    <label className="filter-label">Section</label>
+                    <select 
+                      className="filter-dropdown" 
+                      value={selectedSection} 
+                      onChange={(e) => setSelectedSection(e.target.value)}
+                    >
                       <option value="">All Sections</option>
                       {sections.map(sec => <option key={sec} value={sec}>{sec}</option>)}
                     </select>
                   </div>
-                  {(selectedClass || selectedSection || searchKeyword) && (
-                    <button className="reset-btn" onClick={handleResetFilters}>Reset</button>
-                  )}
-                  <button className="excel-btn" onClick={handleExcelDownload}>⬇ Excel Download</button>
+                  
+                  <button className="excel-btn" onClick={handleExcelDownload}>
+                    ↓ Excel Download
+                  </button>
+                  
+                  <button className="na-info-btn">
+                    NA = Not Applicable (No bank account for this student)
+                  </button>
                 </div>
+                
                 <div className="search-group">
-                  <input className="search-input" placeholder="Search name, EMIS ID..." value={searchKeyword} onChange={(e) => setSearchKeyword(e.target.value)} />
+                  <input 
+                    className="search-input" 
+                    placeholder="Search by name, EMIS ID..." 
+                    value={searchKeyword} 
+                    onChange={(e) => setSearchKeyword(e.target.value)} 
+                  />
                 </div>
               </div>
             </div>
 
-            <div style={{overflowX: 'auto'}}>
+            <div className="table-container">
               <table>
                 <thead>
                   <tr>
-                    <th>S.No</th>
-                    <th onClick={() => handleSort('studentEmisId')}>EMIS ID</th>
-                    <th onClick={() => handleSort('studentName')}>Student Name</th>
-                    <th onClick={() => handleSort('class')}>Class</th>
-                    <th onClick={() => handleSort('section')}>Section</th>
-                    <th>Bank Account</th>
-                    <th>Postal Bank Account</th>
+                    <th className="center">S.No</th>
+                    <th>EMIS ID</th>
+                    <th>Student Name</th>
+                    <th className="center">Class</th>
+                    <th className="center">Section</th>
+                    <th className="center">Bank account Availablity(Yes/No)</th>
+                    <th className="postal-header">Whether it is a Postal Bank Account (Yes/No)</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {currentItems.length === 0 ? (
-                    <tr><td colSpan="7" style={{textAlign: 'center', padding: '40px', color: '#666'}}>No Records Found</td></tr>
+                  {loading ? (
+                    <tr>
+                      <td colSpan="7" className="no-records">
+                        Loading...
+                      </td>
+                    </tr>
+                  ) : currentItems.length === 0 ? (
+                    <tr>
+                      <td colSpan="7" className="no-records">
+                        No Records Found
+                      </td>
+                    </tr>
                   ) : (
                     currentItems.map((student, index) => (
                       <tr key={student.id}>
-                        <td>{indexOfFirstItem + index + 1}</td>
+                        <td className="center">{indexOfFirstItem + index + 1}</td>
                         <td>{student.studentEmisId}</td>
                         <td>{student.studentName}</td>
-                        <td>{student.class}</td>
-                        <td>{student.section}</td>
-                        <td>
+                        <td className="center">{student.class}</td>
+                        <td className="center">{student.section}</td>
+                        <td className="center">
                           <span className={getStatusClass(student.bankAccountAvailable)}>
                             {student.bankAccountAvailable}
                           </span>
                         </td>
-                        <td>
+                        <td className="center">
                           <span className={getStatusClass(student.postalBankAccount)}>
                             {student.postalBankAccount}
                           </span>
@@ -222,11 +501,35 @@
 
             {filteredStudents.length > 0 && (
               <div className="pagination">
-                <button className="page-btn" onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>‹‹</button>
-                <button className="page-btn" onClick={() => setCurrentPage(p => Math.max(p-1, 1))} disabled={currentPage === 1}>‹</button>
-                <span>Page {currentPage} of {totalPages}</span>
-                <button className="page-btn" onClick={() => setCurrentPage(p => Math.min(p+1, totalPages))} disabled={currentPage === totalPages}>›</button>
-                <button className="page-btn" onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>››</button>
+                <button 
+                  className="page-btn" 
+                  onClick={() => setCurrentPage(1)} 
+                  disabled={currentPage === 1}
+                >
+                  ‹‹
+                </button>
+                <button 
+                  className="page-btn" 
+                  onClick={() => setCurrentPage(p => Math.max(p-1, 1))} 
+                  disabled={currentPage === 1}
+                >
+                  ‹
+                </button>
+                <span className="page-text">Page {currentPage} of {totalPages}</span>
+                <button 
+                  className="page-btn" 
+                  onClick={() => setCurrentPage(p => Math.min(p+1, totalPages))} 
+                  disabled={currentPage === totalPages}
+                >
+                  ›
+                </button>
+                <button 
+                  className="page-btn" 
+                  onClick={() => setCurrentPage(totalPages)} 
+                  disabled={currentPage === totalPages}
+                >
+                  ››
+                </button>
               </div>
             )}
           </div>
