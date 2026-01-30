@@ -1,175 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Bank Details - EMIS</title>
-
-  <!-- React & Babel CDN -->
-  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <!-- PRODUCTION React (Fixes GitHub Pages blank screen) -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-  }
-
-  th {
-    background: linear-gradient(135deg, #4facfe, #00f2fe);
-    color: white;
-    padding: 10px;
-    text-align: left;
-  }
-
-  td {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-  }
-
-  tr:hover {
-    background-color: #f1f1f1;
-  }
-
-  .status-yes {
-    background-color: #d4edda;
-    color: #155724;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-  }
-
-  .status-no {
-    background-color: #f8d7da;
-    color: #721c24;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-  }
-</style>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; }
+    table { width: 100%; border-collapse: collapse; background: white; }
+    th { background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; padding: 12px 15px; text-align: left; font-weight: 600; }
+    td { padding: 12px 15px; border-bottom: 1px solid #eee; }
+    tr:hover { background-color: #f1f1f1; }
+    .status-yes { background-color: #d4edda; color: #155724; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+    .status-no { background-color: #f8d7da; color: #721c24; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+    .filter-section { padding: 20px; border-bottom: 1px solid #e0e0e0; background: white; }
+    .filter-row { display: flex; justify-content: space-between; align-items: end; gap: 15px; flex-wrap: wrap; }
+    .filter-group { display: flex; flex-direction: column; gap: 5px; min-width: 160px; }
+    .filter-dropdown, .search-input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+    .reset-btn { padding: 8px 16px; background: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    .excel-btn { padding: 8px 16px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 500; }
+    .search-group { flex: 1; max-width: 300px; }
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 20px; border-top: 1px solid #e0e0e0; background: white; }
+    .page-btn { padding: 8px 12px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; }
+    .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .content-card { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; max-width: 1400px; margin: 0 auto; }
+    .breadcrumb { padding: 20px; background: #f8f9fa; font-size: 18px; color: #333; }
+  </style>
 </head>
-
-<body style="margin:0">
+<body>
   <div id="root"></div>
-
-  <!-- Main React Code -->
+  
   <script type="text/babel">
     const { useState, useEffect, useMemo } = React;
 
     const StudentBankDetails = () => {
+      // Your exact main code state/logic here (unchanged)
       const [students, setStudents] = useState([]);
       const [filteredStudents, setFilteredStudents] = useState([]);
       const [loading, setLoading] = useState(true);
       const [selectedClass, setSelectedClass] = useState('');
       const [selectedSection, setSelectedSection] = useState('');
       const [searchKeyword, setSearchKeyword] = useState('');
+      const [sortColumn, setSortColumn] = useState('');
+      const [sortDirection, setSortDirection] = useState('asc');
       const [currentPage, setCurrentPage] = useState(1);
-      const itemsPerPage = 10;
+      const [itemsPerPage] = useState(10);
 
+      // Mock data (replace with your EMIS API: fetch('/api/students'))
       useEffect(() => {
-        const data = [
+        setLoading(true);
+        const mockData = [
           { id: 1, studentName: 'Rahul Kumar', studentEmisId: 'EMIS001234', class: '10', section: 'A', bankAccountAvailable: 'Yes', postalBankAccount: 'Yes' },
           { id: 2, studentName: 'Priya Sharma', studentEmisId: 'EMIS001235', class: '10', section: 'B', bankAccountAvailable: 'No', postalBankAccount: 'No' },
           { id: 3, studentName: 'Amit Singh', studentEmisId: 'EMIS001236', class: '11', section: 'A', bankAccountAvailable: 'Yes', postalBankAccount: 'Yes' },
-          { id: 4, studentName: 'Sneha Patel', studentEmisId: 'EMIS001237', class: '11', section: 'B', bankAccountAvailable: 'Yes', postalBankAccount: 'No' }
+          { id: 4, studentName: 'Sneha Patel', studentEmisId: 'EMIS001237', class: '11', section: 'B', bankAccountAvailable: 'Yes', postalBankAccount: 'No' },
+          { id: 5, studentName: 'Vikram Reddy', studentEmisId: 'EMIS001238', class: '12', section: 'A', bankAccountAvailable: 'No', postalBankAccount: 'No' },
+          { id: 6, studentName: 'Anita Desai', studentEmisId: 'EMIS001239', class: '12', section: 'B', bankAccountAvailable: 'Yes', postalBankAccount: 'Yes' },
+          { id: 7, studentName: 'Rohan Gupta', studentEmisId: 'EMIS001240', class: '9', section: 'A', bankAccountAvailable: 'Yes', postalBankAccount: 'No' }
         ];
-        setStudents(data);
-        setFilteredStudents(data);
+        setStudents(mockData);
+        setFilteredStudents(mockData);
         setLoading(false);
       }, []);
 
+      const classes = useMemo(() => [...new Set(students.map(s => s.class))].sort((a, b) => parseInt(a) - parseInt(b)), [students]);
+      const sections = useMemo(() => [...new Set(students.map(s => s.section))].sort(), [students]);
+
+      // Filter logic (your exact code)
       useEffect(() => {
-        let result = [...students];
-        if (selectedClass) result = result.filter(s => s.class === selectedClass);
-        if (selectedSection) result = result.filter(s => s.section === selectedSection);
+        let filtered = [...students];
+        if (selectedClass) filtered = filtered.filter(s => s.class === selectedClass);
+        if (selectedSection) filtered = filtered.filter(s => s.section === selectedSection);
         if (searchKeyword) {
-          const k = searchKeyword.toLowerCase();
-          result = result.filter(s =>
-            s.studentName.toLowerCase().includes(k) ||
-            s.studentEmisId.toLowerCase().includes(k)
+          const keyword = searchKeyword.toLowerCase();
+          filtered = filtered.filter(s => 
+            s.studentName.toLowerCase().includes(keyword) ||
+            s.studentEmisId.toLowerCase().includes(keyword) ||
+            s.class.includes(keyword) ||
+            s.section.toLowerCase().includes(keyword) ||
+            s.bankAccountAvailable.toLowerCase().includes(keyword) ||
+            s.postalBankAccount.toLowerCase().includes(keyword)
           );
         }
-        setFilteredStudents(result);
+        setFilteredStudents(filtered);
         setCurrentPage(1);
       }, [students, selectedClass, selectedSection, searchKeyword]);
 
-      const start = (currentPage - 1) * itemsPerPage;
-      const pageData = filteredStudents.slice(start, start + itemsPerPage);
+      // Sort logic (your exact code)
+      const handleSort = (column) => {
+        const sortableColumns = ['studentEmisId', 'studentName', 'class', 'section'];
+        if (!sortableColumns.includes(column)) return;
+        let direction = 'asc';
+        if (sortColumn === column && sortDirection === 'asc') direction = 'desc';
+        const sorted = [...filteredStudents].sort((a, b) => {
+          let aValue = a[column], bValue = b[column];
+          if (column === 'class') { aValue = parseInt(aValue); bValue = parseInt(bValue); }
+          if (aValue < bValue) return direction === 'asc' ? -1 : 1;
+          if (aValue > bValue) return direction === 'asc' ? 1 : -1;
+          return 0;
+        });
+        setFilteredStudents(sorted);
+        setSortColumn(column);
+        setSortDirection(direction);
+      };
+
+      const indexOfLastItem = currentPage * itemsPerPage;
+      const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+      const currentItems = filteredStudents.slice(indexOfFirstItem, indexOfLastItem);
       const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
 
+      // Excel export (your exact code)
+      const handleExcelDownload = () => {
+        const headers = ['S.No', 'Student EMIS ID', 'Student Name', 'Class', 'Section', 'Bank Account Available', 'Postal Bank Account'];
+        const csvContent = [
+          headers.join(','),
+          ...filteredStudents.map((student, index) => [
+            index + 1, 
+            student.studentEmisId, 
+            `"${student.studentName}"`, 
+            student.class, 
+            student.section, 
+            student.bankAccountAvailable, 
+            student.postalBankAccount
+          ].join(','))
+        ].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Student_Postal_Bank_Details_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+      };
+
+      const handleResetFilters = () => {
+        setSelectedClass('');
+        setSelectedSection('');
+        setSearchKeyword('');
+      };
+
+      if (loading) return <div style={{padding: '40px', textAlign: 'center'}}>Loading...</div>;
+
       return (
-        <div style={{ padding: '20px', fontFamily: 'Arial' }}>
-          <h2>Student Bank Details</h2>
-
-          <input
-            placeholder="Search..."
-            value={searchKeyword}
-            onChange={e => setSearchKeyword(e.target.value)}
-            style={{ padding: '8px', marginBottom: '10px', width: '250px' }}
-          />
-
-          <table border="1" cellPadding="8" cellSpacing="0" width="100%">
-            <thead>
-              <tr>
-                <th>S.No</th>
-                <th>EMIS ID</th>
-                <th>Name</th>
-                <th>Class</th>
-                <th>Section</th>
-                <th>Bank Account</th>
-                <th>Postal Bank</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr><td colSpan="7">Loading...</td></tr>
-              ) : pageData.length === 0 ? (
-                <tr><td colSpan="7">No records</td></tr>
-              ) : (
-                pageData.map((s, i) => (
-                  <tr key={s.id}>
-                    <td>{start + i + 1}</td>
-                    <td>{s.studentEmisId}</td>
-                    <td>{s.studentName}</td>
-                    <td>{s.class}</td>
-                    <td>{s.section}</td>
-                   <td>
-  <span className={student.bankAccountAvailable === 'Yes' ? 'status-yes' : 'status-no'}>
-    {student.bankAccountAvailable}
-  </span>
-</td>
-
-<td>
-  <span className={student.postalBankAccount === 'Yes' ? 'status-yes' : 'status-no'}>
-    {student.postalBankAccount}
-  </span>
-</td>
+        <div style={{padding: '20px', backgroundColor: '#f5f5f5', minHeight: '100vh'}}>
+          <div style={{fontSize: '18px', marginBottom: '20px', color: '#333'}}>
+            Students › <strong>Student Bank Details</strong>
+          </div>
+          <div style={{background: 'white', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', overflow: 'hidden'}}>
+            <div className="filter-section">
+              <div className="filter-row">
+                <div style={{display: 'flex', gap: '15px', alignItems: 'end', flexWrap: 'wrap'}}>
+                  <div className="filter-group">
+                    <label style={{fontSize: '13px', fontWeight: '500', color: '#333'}}>Class</label>
+                    <select className="filter-dropdown" value={selectedClass} onChange={(e) => setSelectedClass(e.target.value)}>
+                      <option value="">All Classes</option>
+                      {classes.map(cls => <option key={cls} value={cls}>Class {cls}</option>)}
+                    </select>
+                  </div>
+                  <div className="filter-group">
+                    <label style={{fontSize: '13px', fontWeight: '500', color: '#333'}}>Section</label>
+                    <select className="filter-dropdown" value={selectedSection} onChange={(e) => setSelectedSection(e.target.value)}>
+                      <option value="">All Sections</option>
+                      {sections.map(sec => <option key={sec} value={sec}>{sec}</option>)}
+                    </select>
+                  </div>
+                  {(selectedClass || selectedSection || searchKeyword) && (
+                    <button className="reset-btn" onClick={handleResetFilters}>Reset</button>
+                  )}
+                  <button className="excel-btn" onClick={handleExcelDownload}>⬇ Excel Download</button>
+                </div>
+                <div className="search-group">
+                  <input className="search-input" placeholder="Search by name, EMIS ID, class..." value={searchKeyword} onChange={(e) => setSearchKeyword(e.target.value)} />
+                </div>
+              </div>
+            </div>
+            <div style={{overflowX: 'auto'}}>
+              <table>
+                <thead>
+                  <tr>
+                    <th>S.No</th>
+                    <th style={{cursor: 'pointer'}} onClick={() => handleSort('studentEmisId')}>EMIS ID</th>
+                    <th style={{cursor: 'pointer'}} onClick={() => handleSort('studentName')}>Student Name</th>
+                    <th style={{cursor: 'pointer'}} onClick={() => handleSort('class')}>Class</th>
+                    <th style={{cursor: 'pointer'}} onClick={() => handleSort('section')}>Section</th>
+                    <th>Bank Account</th>
+                    <th>Postal Bank Account</th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-
-          <div style={{ marginTop: '10px' }}>
-            <button onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}>Prev</button>
-            <span style={{ margin: '0 10px' }}>
-              Page {currentPage} of {totalPages}
-            </span>
-            <button onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}>Next</button>
+                </thead>
+                <tbody>
+                  {currentItems.length === 0 ? (
+                    <tr><td colSpan="7" style={{textAlign: 'center', padding: '40px', color: '#666'}}>No Records Found</td></tr>
+                  ) : (
+                    currentItems.map((student, index) => (
+                      <tr key={student.id}>
+                        <td>{indexOfFirstItem + index + 1}</td>
+                        <td>{student.studentEmisId}</td>
+                        <td>{student.studentName}</td>
+                        <td>{student.class}</td>
+                        <td>{student.section}</td>
+                        <td><span className={student.bankAccountAvailable === 'Yes' ? 'status-yes' : 'status-no'}>{student.bankAccountAvailable}</span></td>
+                        <td><span className={student.postalBankAccount === 'Yes' ? 'status-yes' : 'status-no'}>{student.postalBankAccount}</span></td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+            {filteredStudents.length > 0 && (
+              <div className="pagination">
+                <button className="page-btn" onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>‹‹</button>
+                <button className="page-btn" onClick={() => setCurrentPage(p => Math.max(p-1, 1))} disabled={currentPage === 1}>‹</button>
+                <span>Page {currentPage} of {totalPages}</span>
+                <button className="page-btn" onClick={() => setCurrentPage(p => Math.min(p+1, totalPages))} disabled={currentPage === totalPages}>›</button>
+                <button className="page-btn" onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>››</button>
+              </div>
+            )}
           </div>
         </div>
       );
     };
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<StudentBankDetails />);
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<StudentBankDetails />);
   </script>
 </body>
 </html>
+
